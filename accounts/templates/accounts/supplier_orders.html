@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Supplier Orders</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'accounts/style.css' %}">
+</head>
+<body>
+    {% include 'accounts/supplier_navbar.html' %}
+
+    <h2 class="page-title">Supplier Orders</h2>
+
+    {% if orders %}
+        {% for order in orders %}
+            <div class="order-card">
+                <p><strong>Order Number:</strong> {{ order.order_number }}</p>
+                <p><strong>Contractor:</strong> {{ order.contractor.name }}</p>
+                <p><strong>Company:</strong> {{ order.company.name }}</p>
+                <p><strong>Status:</strong> {{ order.status }}</p>
+                <p><strong>Date:</strong> {{ order.created_at|date:"d/m/Y H:i" }}</p>
+
+                <h4>Items:</h4>
+                <ul class="item-list">
+                    {% for item in order.items.all %}
+                        <li>
+                            {{ item.item_name }} — {{ item.quantity }} pcs @ ₪{{ item.unit_price }} = ₪{{ item.total_price }}
+                        </li>
+                    {% endfor %}
+                </ul>
+
+                <p><strong>Total Before Tax:</strong> ₪{{ order.total_before_tax }}</p>
+                <p><strong>Total After 18% Tax:</strong> ₪{{ order.total_after_tax }}</p>
+
+                {% if order.status != 'completed' %}
+                    <form method="post" action="{% url 'update_order_status' order.id %}" class="order-form">
+                        {% csrf_token %}
+                        <label for="status_{{ order.id }}">Change Status:</label>
+                        <select name="status" id="status_{{ order.id }}">
+                            {% if order.status == 'pending' %}
+                                <option value="approved">Approve</option>
+                                <option value="completed">Complete</option>
+                            {% elif order.status == 'approved' %}
+                                <option value="approved" selected>Approved</option>
+                                <option value="completed">Complete</option>
+                            {% endif %}
+                        </select>
+
+                        <label for="delivery_date_{{ order.id }}">Delivery Date:</label>
+                        <input type="date" name="delivery_date" id="delivery_date_{{ order.id }}"
+                               value="{{ order.delivery_date|date:'Y-m-d' }}">
+
+                        <button type="submit" class="primary-btn">Update</button>
+                    </form>
+                {% else %}
+                    <p><strong>Delivery Date:</strong> {{ order.delivery_date }}</p>
+                {% endif %}
+            </div>
+        {% endfor %}
+    {% else %}
+        <p class="empty-text">No orders yet.</p>
+    {% endif %}
+</body>
+</html>

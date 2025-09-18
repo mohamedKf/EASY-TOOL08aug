@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Materials</title>
+        {% load static %}
+    <link rel="stylesheet" href="{% static 'accounts/style.css' %}">
+</head>
+<body>
+{% include 'accounts/supplier_navbar.html' %}
+<h2>Add Items</h2>
+
+<!-- Screw Form -->
+<h3>Add Screw</h3>
+<form method="post">
+    {% csrf_token %}
+    {{ screw_form.as_p }}
+    <button type="submit" name="submit_screw">Add Screw</button>
+</form>
+
+<hr>
+
+<!-- Aluminum Profile Set Form -->
+<h3>Add Aluminum Profile Set</h3>
+<form method="post">
+    {% csrf_token %}
+    {{ profile_set_form.as_p }}
+    <button type="submit" name="submit_profile">Add Profile Set</button>
+</form>
+
+<hr>
+
+<!-- Metal Profile Form (Studs/Tracks) -->
+<h3>Add Metal Profile</h3>
+<form method="post">
+    {% csrf_token %}
+    {{ metal_form.as_p }}
+    <button type="submit" name="submit_metal">Add Metal Profile</button>
+</form>
+
+<hr>
+
+<!-- Drywall Board Form -->
+<h3>Add Drywall Board</h3>
+<form method="post">
+    {% csrf_token %}
+    {{ board_form.as_p }}
+    <button type="submit" name="submit_board">Add Drywall Board</button>
+</form>
+
+
+</body>
+</html>

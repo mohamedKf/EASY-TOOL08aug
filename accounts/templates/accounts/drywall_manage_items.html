@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Drywall Rooms & Items</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'accounts/style.css' %}">
+</head>
+<body>
+{% include 'accounts/contractor_navbar.html' %}
+
+<div class="container">
+    <h2>Manage Drywall Rooms & Items — {{ selected_project.project_number }}</h2>
+
+    {% if rooms %}
+        {% for room in rooms %}
+            <fieldset class="room-fieldset">
+                <legend class="room-legend">{{ room.name }}</legend>
+
+                <!-- Edit Room Name -->
+                <form method="post" class="inline-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="edit_room">
+                    <input type="hidden" name="room_id" value="{{ room.id }}">
+                    <input type="text" name="new_name" value="{{ room.name }}" required>
+                    <button type="submit" class="btn btn-primary">💾 Save</button>
+                </form>
+
+                <!-- Delete Room -->
+                <form method="post" class="inline-form" onsubmit="return confirm('Delete this room and all its items?');">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="delete_room">
+                    <input type="hidden" name="room_id" value="{{ room.id }}">
+                    <button type="submit" class="btn btn-danger">🗑️ Delete Room</button>
+                </form>
+
+                <hr>
+
+                <!-- Walls -->
+                <h4>Walls</h4>
+                {% for wall in room.walls.all %}
+                    <div class="item-card">
+                        <p>Width: {{ wall.width }} | Height: {{ wall.height }} | Type: {{ wall.drywall_type }}</p>
+                        <form method="post" class="edit-form">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="edit_item">
+                            <input type="hidden" name="item_type" value="wall">
+                            <input type="hidden" name="item_id" value="{{ wall.id }}">
+                            <label>Width:
+                                <input type="number" step="0.01" name="width" value="{{ wall.width }}">
+                            </label>
+                            <label>Height:
+                                <input type="number" step="0.01" name="height" value="{{ wall.height }}">
+                            </label>
+                            <label>Type:
+                                <input type="text" name="drywall_type" value="{{ wall.drywall_type }}">
+                            </label>
+                            <label>Stud Thickness:
+                                <input type="text" name="stud_thickness" value="{{ wall.stud_thickness }}">
+                            </label>
+                            <label>Layers:
+                                <input type="number" name="number_of_layers" value="{{ wall.number_of_layers }}">
+                            </label>
+                            <label>Double Sided:
+                                <input type="checkbox" name="double_sided" {% if wall.double_sided %}checked{% endif %}>
+                            </label>
+                            <button type="submit" class="btn btn-primary">💾 Save</button>
+                        </form>
+                        <form method="post" class="inline-form" onsubmit="return confirm('Delete this wall?');">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="delete_item">
+                            <input type="hidden" name="item_type" value="wall">
+                            <input type="hidden" name="item_id" value="{{ wall.id }}">
+                            <button type="submit" class="btn btn-danger">🗑️ Delete</button>
+                        </form>
+                    </div>
+                {% empty %}
+                    <p class="muted">No walls.</p>
+                {% endfor %}
+
+                <!-- Ceilings -->
+                <h4>Ceilings</h4>
+                {% for ceil in room.ceilings.all %}
+                    <div class="item-card">
+                        <p>Width: {{ ceil.width }} | Height: {{ ceil.height }} | Type: {{ ceil.drywall_type }}</p>
+                        <form method="post" class="edit-form">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="edit_item">
+                            <input type="hidden" name="item_type" value="ceiling">
+                            <input type="hidden" name="item_id" value="{{ ceil.id }}">
+                            <label>Width:
+                                <input type="number" step="0.01" name="width" value="{{ ceil.width }}">
+                            </label>
+                            <label>Height:
+                                <input type="number" step="0.01" name="height" value="{{ ceil.height }}">
+                            </label>
+                            <label>Type:
+                                <input type="text" name="drywall_type" value="{{ ceil.drywall_type }}">
+                            </label>
+                            <label>Stud Thickness:
+                                <input type="text" name="stud_thickness" value="{{ ceil.stud_thickness }}">
+                            </label>
+                            <button type="submit" class="btn btn-primary">💾 Save</button>
+                        </form>
+                        <form method="post" class="inline-form" onsubmit="return confirm('Delete this ceiling?');">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="delete_item">
+                            <input type="hidden" name="item_type" value="ceiling">
+                            <input type="hidden" name="item_id" value="{{ ceil.id }}">
+                            <button type="submit" class="btn btn-danger">🗑️ Delete</button>
+                        </form>
+                    </div>
+                {% empty %}
+                    <p class="muted">No ceilings.</p>
+                {% endfor %}
+            </fieldset>
+        {% endfor %}
+    {% else %}
+        <p>No rooms yet.</p>
+    {% endif %}
+</div>
+
+</body>
+</html>

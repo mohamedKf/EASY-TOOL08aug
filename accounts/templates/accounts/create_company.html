@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Company</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'accounts/style.css' %}">
+</head>
+<body>
+    {% include 'accounts/contractor_navbar.html' %}
+
+<div class="container">
+    <h2>Create a New Company</h2>
+
+    {% if error %}
+        <div class="alert alert-error">{{ error }}</div>
+    {% endif %}
+
+    {% if success %}
+        <div class="alert alert-success">{{ success }}</div>
+    {% endif %}
+
+    <form method="post" class="form-card">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Create Company</button>
+    </form>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Material List</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'accounts/style.css' %}">
+</head>
+<body>
+    {% include 'accounts/contractor_navbar.html' %}
+
+    <div class="container">
+        <h2>Material List</h2>
+
+        <!-- Project and material type selection -->
+        <form method="get" class="form-inline">
+            <select name="project_id" required>
+                <option value="">-- Select Project --</option>
+                {% for p in projects %}
+                    <option value="{{ p.id }}" {% if selected_project and p.id == selected_project.id %}selected{% endif %}>
+                        {{ p.project_number }} - {{ p.address }}
+                    </option>
+                {% endfor %}
+            </select>
+            <button type="submit" name="action" value="aluminum" class="btn btn-primary">Show Aluminum</button>
+            <button type="submit" name="action" value="glass" class="btn btn-info">Show Glass</button>
+            <button type="submit" name="action" value="drywall" class="btn btn-secondary">Show Drywall</button>
+        </form>
+
+        <!-- Aluminum materials -->
+        {% if aluminum_data %}
+            <h3>Aluminum Materials</h3>
+
+            <h4>Frame Materials</h4>
+            <table class="styled-table">
+                <thead>
+                    <tr>
+                        <th>Window #</th>
+                        <th>Top Frame (cm)</th>
+                        <th>Bottom Frame (cm)</th>
+                        <th>Side Frame (cm)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for f in aluminum_data.frame_data %}
+                    <tr>
+                        <td>{{ f.window_number }}</td>
+                        <td>{{ f.top }}</td>
+                        <td>{{ f.bottom }}</td>
+                        <td>{{ f.side }}</td>
+                    </tr>
+                    {% endfor %}
+                    <tr class="total-row">
+                        <td><strong>Total</strong></td>
+                        <td>{{ aluminum_data.frame_totals.top }}</td>
+                        <td>{{ aluminum_data.frame_totals.bottom }}</td>
+                        <td>{{ aluminum_data.frame_totals.side }}</td>
+                    </tr>
+                    <tr class="total-row">
+                        <td><strong>Bars Needed</strong></td>
+                        <td>{{ aluminum_data.frame_bars.top }}</td>
+                        <td>{{ aluminum_data.frame_bars.bottom }}</td>
+                        <td>{{ aluminum_data.frame_bars.side }}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h4>Sash Materials</h4>
+            <table class="styled-table">
+                <thead>
+                    <tr>
+                        <th>Window #</th>
+                        <th>Sash #</th>
+                        <th>Top (cm)</th>
+                        <th>Bottom (cm)</th>
+                        <th>Handle Side (צד)</th>
+                        <th>Side (שולב)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for s in aluminum_data.sash_data %}
+                    <tr>
+                        <td>{{ s.window_number }}</td>
+                        <td>{{ s.sash_number }}</td>
+                        <td>{{ s.top }}</td>
+                        <td>{{ s.bottom }}</td>
+                        <td>{{ s.handle_side }}</td>
+                        <td>{{ s.side }}</td>
+                    </tr>
+                    {% endfor %}
+                    <tr class="total-row">
+                        <td colspan="2"><strong>Total</strong></td>
+                        <td>{{ aluminum_data.sash_totals.top_bottom }}</td>
+                        <td></td>
+                        <td>{{ aluminum_data.sash_totals.handle_side }}</td>
+                        <td>{{ aluminum_data.sash_totals.side }}</td>
+                    </tr>
+                    <tr class="total-row">
+                        <td colspan="2"><strong>Bars Needed</strong></td>
+                        <td>{{ aluminum_data.sash_bars.top_bottom }}</td>
+                        <td></td>
+                        <td>{{ aluminum_data.sash_bars.handle_side }}</td>
+                        <td>{{ aluminum_data.sash_bars.side }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        {% endif %}
+
+        <!-- Glass materials -->
+        {% if glass_data %}
+            <h3>Glass Materials</h3>
+            <table class="styled-table">
+                <thead>
+                    <tr>
+                        <th>Window #</th>
+                        <th>Type</th>
+                        <th>Height (cm)</th>
+                        <th>Width (cm)</th>
+                        <th>Area (m²)</th>
+                        <th>Price (₪)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for g in glass_data %}
+                    <tr>
+                        <td>{{ g.window_number }}</td>
+                        <td>{{ g.glass_type }}</td>
+                        <td>{{ g.height }}</td>
+                        <td>{{ g.width }}</td>
+                        <td>{{ g.area }}</td>
+                        <td>{{ g.cost }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+
+        <!-- Drywall materials -->
+        {% if drywall_data %}
+            <h3>Drywall Materials</h3>
+
+            <!-- Walls Section -->
+            <h4>Walls</h4>
+            <table class="styled-table">
+                <thead>
+                    <tr>
+                        <th>Wall #</th>
+                        <th>Room</th>
+                        <th>Width (m)</th>
+                        <th>Height (m)</th>
+                        <th>Area (m²)</th>
+                        <th>Drywall Type</th>
+                        <th>Stud Thickness</th>
+                        <th>Board Length (m)</th>
+                        <th>Layers</th>
+                        <th>Double-Sided</th>
+                        <th>Track Length (m)</th>
+                        <th>Track Count</th>
+                        <th>Stud Count</th>
+                        <th>Gypsum Boards</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in drywall_data %}
+                        {% if item.item_type == 'wall' %}
+                        <tr>
+                            <td>Wall {{ item.wall_number }}</td>
+                            <td>{{ item.room }}</td>
+                            <td>{{ item.width|floatformat:2 }}</td>
+                            <td>{{ item.height|floatformat:2 }}</td>
+                            <td>{{ item.area|floatformat:2 }}</td>
+                            <td>{{ item.drywall_type }}</td>
+                            <td>{{ item.stud_thickness }}</td>
+                            <td>{{ item.board_length }}</td>
+                            <td>{{ item.layers }}</td>
+                            <td>{{ item.faces }}</td>
+                            <td>{{ item.track_length }}</td>
+                            <td>{{ item.track_count }}</td>
+                            <td>{{ item.stud_count }}</td>
+                            <td>{{ item.gypsum_boards }}</td>
+                        </tr>
+                        {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <!-- Ceilings Section -->
+            <h4>Ceilings</h4>
+            <table class="styled-table">
+                <thead>
+                    <tr>
+                        <th>Ceiling #</th>
+                        <th>Room</th>
+                        <th>Area (m²)</th>
+                        <th>Drywall Type</th>
+                        <th>Stud Type</th>
+                        <th>Track Length (m)</th>
+                        <th>Track Count</th>
+                        <th>Stud Count</th>
+                        <th>Gypsum Boards</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in drywall_data %}
+                        {% if item.item_type == 'ceiling' %}
+                        <tr>
+                            <td>Ceiling {{ item.ceiling_number }}</td>
+                            <td>{{ item.room }}</td>
+                            <td>{{ item.area|floatformat:2 }}</td>
+                            <td>{{ item.drywall_type }}</td>
+                            <td>{{ item.stud_thickness }}</td>
+                            <td>{{ item.track_length }}</td>
+                            <td>{{ item.track_count }}</td>
+                            <td>{{ item.stud_count }}</td>
+                            <td>{{ item.gypsum_boards }}</td>
+                        </tr>
+                        {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+
+        {% if selected_project %}
+            <hr>
+            <h3>Export PDFs for Project {{ selected_project.project_number }}</h3>
+
+            <form method="get" action="{% url 'export_aluminum_materials_pdf' selected_project.id %}">
+                <button type="submit" class="btn btn-primary">Download Aluminum PDF</button>
+            </form>
+
+            <form method="get" action="{% url 'export_glass_materials_pdf' selected_project.id %}">
+                <button type="submit" class="btn btn-info">Download Glass PDF</button>
+            </form>
+
+            <form method="get" action="{% url 'export_drywall_materials_pdf' selected_project.id %}">
+                <button type="submit" class="btn btn-secondary">Download Drywall PDF</button>
+            </form>
+        {% endif %}
+    </div>
+</body>
+</html>

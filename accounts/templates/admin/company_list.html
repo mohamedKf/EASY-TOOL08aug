@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Company List - Admin</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #aaa;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .delete-btn {
+            color: red;
+            cursor: pointer;
+            border: none;
+            background: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>All Companies</h1>
+
+    {% if companies_data %}
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Company Name</th>
+                    <th>Contractor</th>
+                    <th>Code</th>
+                    <th>Workers</th>
+                    <th>Remove</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for company in companies_data %}
+                <tr>
+                    <td>{{ company.id }}</td>
+                    <td>{{ company.name }}</td>
+                    <td>{{ company.contractor.username }}</td>
+                    <td>{{ company.code }}</td>
+                    <td>
+                        {% for worker in company.workers %}
+                            {{ worker.username }}{% if not forloop.last %}, {% endif %}
+                        {% empty %}
+                            <em>No workers</em>
+                        {% endfor %}
+                    </td>
+                    <td>
+                        <form method="post" action="{% url 'delete_company' company.id %}">
+                            {% csrf_token %}
+                            <button class="delete-btn" type="submit">❌ Remove</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No companies found.</p>
+    {% endif %}
+</body>
+</html>

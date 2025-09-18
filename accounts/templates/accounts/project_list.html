@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Projects</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'accounts/style.css' %}">
+</head>
+<body>
+    {% include 'accounts/contractor_navbar.html' %}
+
+    <div class="container">
+        <h1>Your Projects</h1>
+
+        <!-- Project Selection Section -->
+        <div class="project-selection-section">
+            <div class="project-dropdown">
+                <button type="button" class="dropdown-toggle" onclick="toggleProjectDropdown()">
+                    {% if selected_project %}
+                        {{ selected_project.project_number }} - {{ selected_project.address|truncatechars:30 }}
+                        <span class="project-type-small">{{ selected_project.project_type|title }}</span>
+                    {% else %}
+                        Select a Project
+                    {% endif %}
+                    <span class="dropdown-arrow">▼</span>
+                </button>
+
+                <div class="dropdown-menu" id="projectDropdown" style="display: none;">
+                    {% if projects %}
+                        {% for project in projects %}
+                            <form method="get" class="dropdown-item-form">
+                                <input type="hidden" name="project_id" value="{{ project.id }}">
+                                <button type="submit" class="dropdown-item">
+                                    <span class="project-info">
+                                        <strong>{{ project.project_number }}</strong>
+                                        <span class="project-address-small">{{ project.address|truncatechars:35 }}</span>
+                                    </span>
+                                    <span class="project-type-badge">{{ project.project_type|title }}</span>
+                                </button>
+                            </form>
+                        {% endfor %}
+                    {% else %}
+                        <div class="dropdown-item disabled">No projects found</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <script>
+            function toggleProjectDropdown() {
+                const dropdown = document.getElementById('projectDropdown');
+                const toggle = document.querySelector('.dropdown-toggle');
+                const arrow = document.querySelector('.dropdown-arrow');
+
+                if (dropdown.style.display === 'none') {
+                    dropdown.style.display = 'block';
+                    arrow.textContent = '▲';
+                    toggle.classList.add('active');
+                } else {
+                    dropdown.style.display = 'none';
+                    arrow.textContent = '▼';
+                    toggle.classList.remove('active');
+                }
+            }
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(event) {
+                const dropdown = document.getElementById('projectDropdown');
+                const toggle = document.querySelector('.dropdown-toggle');
+                const arrow = document.querySelector('.dropdown-arrow');
+
+                if (!event.target.closest('.project-dropdown')) {
+                    dropdown.style.display = 'none';
+                    arrow.textContent = '▼';
+                    toggle.classList.remove('active');
+                }
+            });
+        </script>
+
+        <!-- Selected Project Details -->
+        {% if selected_project %}
+            <hr>
+            <div class="selected-project-section">
+                <div class="project-header">
+                    <h2>Project: {{ selected_project.project_number }}</h2>
+                    <div class="project-meta">
+                        <span class="project-type-badge">{{ selected_project.project_type|title }}</span>
+                        <span class="project-address">{{ selected_project.address }}</span>
+                    </div>
+                </div>
+
+                <!-- Rooms Section -->
+                <div class="rooms-section">
+                    {% if rooms %}
+                        {% for room in rooms %}
+                            <div class="room-card">
+                                <div class="room-header">
+                                    <h3>{{ room.name }}</h3>
+                                    <div class="room-actions">
+                                        <form method="post" class="inline-form">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="action" value="delete_room">
+                                            <input type="hidden" name="room_id" value="{{ room.id }}">
+                                            <button type="submit" class="btn btn-danger" onclick="return confirm('Delete this room and all its items?')">
+                                                Delete Room
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+
+                                <div class="room-content">
+                                    {% if selected_project.project_type == "aluminum" %}
+                                        <!-- Aluminum Project Items -->
+                                        <div class="item-section">
+                                            <h4>Windows</h4>
+                                            {% if room.windows.all %}
+                                                <div class="items-grid">
+                                                    {% for window in room.windows.all %}
+                                                        <div class="item-card">
+                                                            <div class="item-info">
+                                                                <strong>{{ window.window_type|title }} Window {{ window.window_number }}</strong>
+                                                                <div class="item-details">
+                                                                    <span>Type: {{ window.aluminum_type }}</span>
+                                                                    <span>Sashes: {{ window.number_of_sashs }}</span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="item-actions">
+                                                                <form method="post" class="inline-form">
+                                                                    {% csrf_token %}
+                                                                    <input type="hidden" name="action" value="delete_item">
+                                                                    <input type="hidden" name="item_type" value="window">
+                                                                    <input type="hidden" name="item_id" value="{{ window.id }}">
+                                                                    <button type="submit" class="btn btn-danger btn-small" onclick="return confirm('Delete this window?')">
+                                                                        Delete
+                                                                    </button>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    {% endfor %}
+                                                </div>
+                                            {% else %}
+                                                <p class="text-muted">No windows added yet.</p>
+                                            {% endif %}
+                                        </div>
+
+                                        <div class="item-section">
+                                            <h4>Doors</h4>
+                                            {% if room.doors.all %}
+                                                <div class="items-grid">
+                                                    {% for door in room.doors.all %}
+                                                        <div class="item-card">
+                                                            <div class="item-info">
+                                                                <strong>{{ door.door_type|title }} Door {{ door.door_number }}</strong>
+                                                                <div class="item-details">
+                                                                    <span>Type: {{ door.aluminum_type }}</span>
+                                                                    <span>Sashes: {{ door.number_of_sashs }}</span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="item-actions">
+                                                                <form method="post" class="inline-form">
+                                                                    {% csrf_token %}
+                                                                    <input type="hidden" name="action" value="delete_item">
+                                                                    <input type="hidden" name="item_type" value="door">
+                                                                    <input type="hidden" name="item_id" value="{{ door.id }}">
+                                                                    <button type="submit" class="btn btn-danger btn-small" onclick="return confirm('Delete this door?')">
+                                                                        Delete
+                                                                    </button>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    {% endfor %}
+                                                </div>
+                                            {% else %}
+                                                <p class="text-muted">No doors added yet.</p>
+                                            {% endif %}
+                                        </div>
+
+                                    {% elif selected_project.project_type == "drywall" %}
+                                        <!-- Drywall Project Items -->
+                                        <div class="item-section">
+                                            <h4>Walls</h4>
+                                            {% if room.walls.all %}
+                                                <div class="items-grid">
+                                                    {% for wall in room.walls.all %}
+                                                        <div class="item-card">
+                                                            <div class="item-info">
+                                                                <strong>Wall {{ forloop.counter }}</strong>
+                                                                <div class="item-details">
+                                                                    <span>{{ wall.width }}m × {{ wall.height }}m</span>
+                                                                    <span>Type: {{ wall.drywall_type }}</span>
+                                                                    <span>Stud: {{ wall.stud_thickness }}</span>
+                                                                    <span>Layers: {{ wall.number_of_layers }}</span>
+                                                                    <span>Double-sided: {{ wall.double_sided|yesno:"Yes,No" }}</span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="item-actions">
+                                                                <form method="post" class="inline-form">
+                                                                    {% csrf_token %}
+                                                                    <input type="hidden" name="action" value="delete_item">
+                                                                    <input type="hidden" name="item_type" value="wall">
+                                                                    <input type="hidden" name="item_id" value="{{ wall.id }}">
+                                                                    <button type="submit" class="btn btn-danger btn-small" onclick="return confirm('Delete this wall?')">
+                                                                        Delete
+                                                                    </button>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    {% endfor %}
+                                                </div>
+                                            {% else %}
+                                                <p class="text-muted">No walls added yet.</p>
+                                            {% endif %}
+                                        </div>
+
+                                        <div class="item-section">
+                                            <h4>Ceilings</h4>
+                                            {% if room.ceilings.all %}
+                                                <div class="items-grid">
+                                                    {% for ceiling in room.ceilings.all %}
+                                                        <div class="item-card">
+                                                            <div class="item-info">
+                                                                <strong>Ceiling {{ forloop.counter }}</strong>
+                                                                <div class="item-details">
+                                                                    <span>{{ ceiling.width }}m × {{ ceiling.height }}m</span>
+                                                                    <span>Type: {{ ceiling.drywall_type }}</span>
+                                                                    <span>Stud: {{ ceiling.stud_thickness }}</span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="item-actions">
+                                                                <form method="post" class="inline-form">
+                                                                    {% csrf_token %}
+                                                                    <input type="hidden" name="action" value="delete_item">
+                                                                    <input type="hidden" name="item_type" value="ceiling">
+                                                                    <input type="hidden" name="item_id" value="{{ ceiling.id }}">
+                                                                    <button type="submit" class="btn btn-danger btn-small" onclick="return confirm('Delete this ceiling?')">
+                                                                        Delete
+                                                                    </button>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    {% endfor %}
+                                                </div>
+                                            {% else %}
+                                                <p class="text-muted">No ceilings added yet.</p>
+                                            {% endif %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="empty-message">No rooms found in this project. Add rooms to get started.</p>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>

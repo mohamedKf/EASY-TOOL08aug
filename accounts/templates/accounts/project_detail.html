@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Project Details</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'accounts/style.css' %}">
+</head>
+<body>
+{% include 'accounts/contractor_navbar.html' %}
+
+<h1>Project Details: {{ project.project_number }} - {{ project.project_type|capfirst }}</h1>
+
+<!-- Measurement Form -->
+<h2>Enter Measurements</h2>
+<form method="POST" class="form-container">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="save-button">💾 Save Measurements</button>
+</form>
+
+<!-- Existing Measurements -->
+<h2>Existing Measurements</h2>
+{% if project.measurements.all %}
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Width (m)</th>
+                <th>Length (m)</th>
+                <th>Thickness (mm)</th>
+                <th>Drywall Type</th>
+                <th>Stud Type</th>
+                <th>Track Type</th>
+                <th>Created At</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for measurement in project.measurements.all %}
+            <tr>
+                <td>{{ measurement.width }}</td>
+                <td>{{ measurement.length }}</td>
+                <td>{{ measurement.material_thickness }}</td>
+                <td>{{ measurement.drywall_type|capfirst }}</td>
+                <td>{{ measurement.stud_type|capfirst }}</td>
+                <td>{{ measurement.track_type|capfirst }}</td>
+                <td>{{ measurement.created_at }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No measurements entered yet.</p>
+{% endif %}
+
+<br>
+<a href="{% url 'contractor_page' %}" class="back-link">⬅ Back to Dashboard</a>
+
+</body>
+</html>

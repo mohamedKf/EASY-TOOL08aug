@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sent Messages</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'accounts/style.css' %}">
+    <style>
+        .sent-messages-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .page-title {
+            font-size: 2.2rem;
+            color: #2c3e50;
+            margin: 0;
+            font-weight: 600;
+        }
+
+        .sent-stats {
+            background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .message-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 30px 0;
+            display: grid;
+            gap: 20px;
+        }
+
+        .message-item {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #f1f3f4;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .message-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .message-info {
+            flex: 1;
+        }
+
+        .recipient-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .message-time {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+
+        .sent-badge {
+            background: #d1ecf1;
+            color: #0c5460;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .message-text {
+            margin: 20px 0;
+            line-height: 1.6;
+            color: #495057;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #17a2b8;
+        }
+
+        .message-attachments {
+            margin: 20px 0;
+        }
+
+        .attachment-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+            padding: 10px;
+            background: #e8f4f8;
+            border-radius: 8px;
+        }
+
+        .message-image {
+            max-width: 100%;
+            height: auto;
+            max-height: 200px;
+            border-radius: 8px;
+            margin: 10px 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .download-link {
+            background: #17a2b8;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: background 0.3s ease;
+        }
+
+        .download-link:hover {
+            background: #138496;
+        }
+
+        .message-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            padding: 30px 0;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .primary-btn, .secondary-btn {
+            padding: 12px 25px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .primary-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .primary-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .secondary-btn {
+            background: #6c757d;
+            color: white;
+        }
+
+        .secondary-btn:hover {
+            background: #5a6268;
+            transform: translateY(-1px);
+        }
+
+        .no-messages {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6c757d;
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #6c757d;
+            text-decoration: none;
+            margin-bottom: 20px;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: #495057;
+        }
+
+        @media (max-width: 768px) {
+            .page-header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .message-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .sent-messages-container {
+                padding: 15px;
+            }
+
+            .message-item {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+{% if request.user.user_type == 'contractor' %}
+    {% include 'accounts/contractor_navbar.html' %}
+{% elif request.user.user_type == 'worker' %}
+    {% include 'accounts/worker_navbar.html' %}
+{% endif %}
+
+<div class="sent-messages-container">
+    <a href="{% url 'inbox' %}" class="back-link">← Back to Inbox</a>
+
+    <div class="page-header">
+        <h1 class="page-title">Sent Messages</h1>
+        <div class="sent-stats">
+            {{ sent_messages|length }} message{{ sent_messages|length|pluralize }} sent
+        </div>
+    </div>
+
+    {% if sent_messages %}
+        <ul class="message-list">
+            {% for msg in sent_messages %}
+                <li class="message-item">
+                    <div class="message-header">
+                        <div class="message-info">
+                            <div class="recipient-name">To: {{ msg.recipient.username }}</div>
+                            <div class="message-time">{{ msg.timestamp|date:"d/m/Y H:i" }}</div>
+                        </div>
+                        <div class="sent-badge">Sent</div>
+                    </div>
+
+                    <div class="message-text">{{ msg.text|linebreaks }}</div>
+
+                    {% if msg.image or msg.file %}
+                        <div class="message-attachments">
+                            {% if msg.image %}
+                                <div class="attachment-item">
+                                    <strong>📷 Image attached:</strong>
+                                </div>
+                                <img src="{{ msg.image.url }}" alt="Message Image" class="message-image">
+                            {% endif %}
+
+                            {% if msg.file %}
+                                <div class="attachment-item">
+                                    <strong>📎 File attached:</strong>
+                                    <a href="{{ msg.file.url }}" download class="download-link">Download</a>
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <div class="no-messages">
+            <div class="empty-icon">📤</div>
+            <h3>No sent messages</h3>
+            <p>You haven't sent any messages yet. Start a conversation!</p>
+        </div>
+    {% endif %}
+
+    <div class="message-actions">
+        <a href="{% url 'send_message' %}" class="primary-btn">📝 Send New Message</a>
+        <a href="{% url 'inbox' %}" class="secondary-btn">📥 Back to Inbox</a>
+    </div>
+</div>
+
+</body>
+</html>

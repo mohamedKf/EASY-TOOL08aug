@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Contractor Dashboard</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'accounts/style.css' %}">
+</head>
+<body>
+
+{% include 'accounts/contractor_navbar.html' %}
+
+<div class="container">
+    <h1>Contractor Dashboard</h1>
+
+    <h2>My Projects</h2>
+    <table class="modern-table">
+        <thead>
+            <tr>
+                <th>Project Name</th>
+                <th>Project Number</th>
+                <th>Project Type</th>
+                <th>Assigned Workers</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for project in projects %}
+            <tr>
+                <td>{{ project.project_number }} - {{ project.project_type|capfirst }}</td>
+                <td>{{ project.project_number }}</td>
+                <td>{{ project.project_type|capfirst }}</td>
+                <td>
+                    <ul>
+                        {% for worker in project.workers.all %}
+                        <li>{{ worker.username }}</li>
+                        {% endfor %}
+                    </ul>
+                </td>
+                <td>
+                    {% if project.project_type == 'aluminum' %}
+                        <a class="btn btn-primary" href="{% url 'add_aluminum_item' project.id %}">➕ Add Rooms/Items</a>
+                        <a class="btn btn-warning" href="{% url 'project_list_view' %}?project_id={{ project.id }}">✏️ Edit/Delete</a>
+                    {% elif project.project_type == 'drywall' %}
+                        <a class="btn btn-primary" href="{% url 'add_drywall_room' project.id %}">➕ Add Rooms/Items</a>
+                        <a class="btn btn-warning" href="{% url 'project_list_view' %}?project_id={{ project.id }}">✏️ Edit/Delete</a>
+                    {% else %}
+                        <em>Unknown project type</em>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>

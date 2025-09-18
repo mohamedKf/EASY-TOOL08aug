@@ -1,0 +1,95 @@
+{% load static %}
+<style>
+    .public-navbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        padding: 15px 0;
+    }
+
+    .public-navbar ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 30px;
+    }
+
+    .public-navbar li {
+        margin: 0;
+    }
+
+    .public-navbar a {
+        display: inline-block;
+        padding: 12px 24px;
+        color: rgba(255, 255, 255, 0.9);
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 16px;
+        border-radius: 25px;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+        transition: all 0.3s ease;
+        letter-spacing: 0.5px;
+    }
+
+    .public-navbar a:hover {
+        background: rgba(255, 255, 255, 0.2);
+        border-color: rgba(255, 255, 255, 0.4);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(255, 255, 255, 0.1);
+    }
+
+    .public-navbar a.active {
+        background: rgba(255, 255, 255, 0.25);
+        border-color: rgba(255, 255, 255, 0.5);
+        color: white;
+        box-shadow: 0 5px 20px rgba(255, 255, 255, 0.15);
+    }
+
+    .public-navbar a.active:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: translateY(-1px);
+    }
+
+    /* Add top padding to body to account for fixed navbar */
+    body {
+        padding-top: 80px;
+    }
+
+    /* Responsive design */
+    @media (max-width: 480px) {
+        .public-navbar {
+            padding: 12px 20px;
+        }
+
+        .public-navbar ul {
+            gap: 15px;
+        }
+
+        .public-navbar a {
+            padding: 10px 20px;
+            font-size: 14px;
+        }
+
+        body {
+            padding-top: 70px;
+        }
+    }
+</style>
+
+<nav class="public-navbar">
+    <ul>
+        <li><a href="{% url 'login' %}" class="{% if request.resolver_match.url_name == 'login' %}active{% endif %}">Login</a></li>
+        <li><a href="{% url 'signup' %}" class="{% if request.resolver_match.url_name == 'signup' %}active{% endif %}">Sign Up</a></li>
+    </ul>
+</nav>

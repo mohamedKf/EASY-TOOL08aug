@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Suppliers</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'accounts/style.css' %}">
+</head>
+<body>
+    {% include 'accounts/contractor_navbar.html' %}
+
+    <h2 class="page-title">Suppliers</h2>
+
+    <section class="list-section">
+        {% if suppliers %}
+            <ul class="styled-list">
+                {% for supplier in suppliers %}
+                    <li>
+                        <span class="supplier-name">{{ supplier.name }}</span>
+                        <span class="supplier-username">({{ supplier.username }})</span>
+                        <a href="{% url 'supplier_inventory' supplier.id %}" class="link-btn">View Inventory</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="empty-text">No suppliers available.</p>
+        {% endif %}
+    </section>
+</body>
+</html>

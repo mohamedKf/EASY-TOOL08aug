@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Company</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'accounts/style.css' %}">
+</head>
+<body>
+
+{% include 'accounts/contractor_navbar.html' %}
+
+<div class="container">
+    <h2>🏢 My Company</h2>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-error">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    {% if company %}
+        <div class="company-info">
+            <p><strong>Name:</strong> {{ company.name }}</p>
+            <p><strong>Code:</strong> {{ company.code }}</p>
+            <p><strong>Contractor:</strong> {{ company.contractor.username }}</p>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+            <button class="btn btn-danger" type="submit" name="delete_company">❌ Delete Company</button>
+        </form>
+    {% else %}
+        <p class="text-muted">You are not part of any company.</p>
+        <form action="{% url 'create_company' %}" method="get">
+            <button class="btn btn-primary" type="submit">🏗️ Create a Company</button>
+        </form>
+    {% endif %}
+</div>
+
+</body>
+</html>

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Aluminum Rooms & Items</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'accounts/style.css' %}">
+</head>
+<body>
+
+{% include 'accounts/contractor_navbar.html' %}
+
+<div class="container">
+    <h2>Manage Aluminum Rooms & Items</h2>
+
+    {% if selected_project %}
+        <h3>Project: {{ selected_project.project_number }} - {{ selected_project.project_address }}</h3>
+
+        {% for room in rooms %}
+        <div class="room-card">
+            <!-- Edit Room Name -->
+            <form method="post" class="inline-form">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="edit_room">
+                <input type="hidden" name="room_id" value="{{ room.id }}">
+                <input type="text" name="new_name" value="{{ room.name }}">
+                <button type="submit" class="btn btn-primary">💾 Save Room Name</button>
+            </form>
+
+            <!-- Delete Room -->
+            <form method="post" class="inline-form">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="delete_room">
+                <input type="hidden" name="room_id" value="{{ room.id }}">
+                <button type="submit" class="btn btn-danger" onclick="return confirm('Delete this room and all items?')">🗑 Delete Room</button>
+            </form>
+
+            {% if room.blueprint %}
+                <p>Blueprint: <a href="{{ room.blueprint.url }}" target="_blank">View</a></p>
+            {% endif %}
+
+            <!-- Windows -->
+            <h4>Windows</h4>
+            {% for window in room.windows.all %}
+                <form method="post" class="inline-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="edit_item">
+                    <input type="hidden" name="item_type" value="window">
+                    <input type="hidden" name="item_id" value="{{ window.id }}">
+                    Type: <input type="text" name="window_type" value="{{ window.window_type }}">
+                    Sashs: <input type="number" name="number_of_sashs" value="{{ window.number_of_sashs }}">
+                    Aluminum: <input type="text" name="aluminum_type" value="{{ window.aluminum_type }}">
+                    <button type="submit" class="btn btn-primary">💾 Save</button>
+                </form>
+                <form method="post" class="inline-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="delete_item">
+                    <input type="hidden" name="item_type" value="window">
+                    <input type="hidden" name="item_id" value="{{ window.id }}">
+                    <button type="submit" class="btn btn-danger" onclick="return confirm('Delete this window?')">🗑 Delete</button>
+                </form>
+            {% empty %}
+                <p class="text-muted">No windows yet.</p>
+            {% endfor %}
+
+            <!-- Doors -->
+            <h4>Doors</h4>
+            {% for door in room.doors.all %}
+                <form method="post" class="inline-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="edit_item">
+                    <input type="hidden" name="item_type" value="door">
+                    <input type="hidden" name="item_id" value="{{ door.id }}">
+                    Type: <input type="text" name="door_type" value="{{ door.door_type }}">
+                    Sashs: <input type="number" name="number_of_sashs" value="{{ door.number_of_sashs }}">
+                    Aluminum: <input type="text" name="aluminum_type" value="{{ door.aluminum_type }}">
+                    <button type="submit" class="btn btn-primary">💾 Save</button>
+                </form>
+                <form method="post" class="inline-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="delete_item">
+                    <input type="hidden" name="item_type" value="door">
+                    <input type="hidden" name="item_id" value="{{ door.id }}">
+                    <button type="submit" class="btn btn-danger" onclick="return confirm('Delete this door?')">🗑 Delete</button>
+                </form>
+            {% empty %}
+                <p class="text-muted">No doors yet.</p>
+            {% endfor %}
+
+            <!-- Add New Item -->
+            <h4>Add New Item</h4>
+            <form method="post" class="form">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="add_item">
+                <input type="hidden" name="room_id" value="{{ room.id }}">
+                <label>Item Type:</label>
+                <select name="item_type" required>
+                    <option value="window">Window</option>
+                    <option value="door">Door</option>
+                </select>
+                <label>Subtype:</label>
+                <select name="subtype" required>
+                    <option value="sliding">Sliding</option>
+                    <option value="multi_bolt">Multi-Bolt</option>
+                </select>
+                <label>Aluminum Type:</label>
+                <input type="text" name="aluminum_type" required>
+                <label>Number of Sashs:</label>
+                <input type="number" name="number_of_sashs" min="1" value="2" required>
+                <button type="submit" class="btn btn-primary">➕ Add Item</button>
+            </form>
+        </div>
+        {% endfor %}
+    {% else %}
+        <p class="text-muted">No project selected.</p>
+    {% endif %}
+</div>
+
+</body>
+</html>

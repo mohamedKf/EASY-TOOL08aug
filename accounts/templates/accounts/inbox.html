@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inbox</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'accounts/style.css' %}">
+    <style>
+        .inbox-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .page-title {
+            font-size: 2.2rem;
+            color: #2c3e50;
+            margin: 0;
+            font-weight: 600;
+        }
+
+        .inbox-stats {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .message-list {
+            display: grid;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .message-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #f1f3f4;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .message-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .message-info {
+            flex: 1;
+        }
+
+        .sender-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .message-time {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+
+        .message-status {
+            background: #e8f5e8;
+            color: #2d5a2d;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .message-content {
+            margin: 20px 0;
+            line-height: 1.6;
+            color: #495057;
+        }
+
+        .message-attachments {
+            margin: 20px 0;
+        }
+
+        .attachment-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .message-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 10px 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .message-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .message-actions form {
+            margin: 0;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #0056b3;
+            transform: translateY(-1px);
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-info {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .inbox-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            padding: 30px 0;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6c757d;
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #28a745;
+            background: #d4edda;
+            color: #155724;
+        }
+
+        @media (max-width: 768px) {
+            .page-header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .message-actions {
+                flex-direction: column;
+            }
+
+            .inbox-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+{% if request.user.user_type == 'contractor' %}
+    {% include 'accounts/contractor_navbar.html' %}
+{% elif request.user.user_type == 'worker' %}
+    {% include 'accounts/worker_navbar.html' %}
+{% endif %}
+
+<div class="inbox-container">
+    <div class="page-header">
+        <h1 class="page-title">Your Inbox</h1>
+        <div class="inbox-stats">
+            {{ messages_received|length }} message{{ messages_received|length|pluralize }}
+        </div>
+    </div>
+
+    <!-- Flash Messages -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    {% if messages_received %}
+        <div class="message-list">
+            {% for msg in messages_received %}
+                <div class="message-card">
+                    <div class="message-header">
+                        <div class="message-info">
+                            <div class="sender-name">{{ msg.sender.username }}</div>
+                            <div class="message-time">{{ msg.timestamp|date:"d/m/Y H:i" }}</div>
+                        </div>
+                        <div class="message-status">New</div>
+                    </div>
+
+                    <div class="message-content">
+                        {{ msg.text|linebreaks }}
+                    </div>
+
+                    {% if msg.image or msg.file %}
+                        <div class="message-attachments">
+                            {% if msg.image %}
+                                <div class="attachment-item">
+                                    <strong>📷 Image:</strong>
+                                </div>
+                                <img src="{{ msg.image.url }}" class="message-image" alt="Message attachment">
+                            {% endif %}
+
+                            {% if msg.file %}
+                                <div class="attachment-item">
+                                    <strong>📎 File:</strong>
+                                    <a href="{{ msg.file.url }}" download class="btn btn-info">Download</a>
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+
+                    <div class="message-actions">
+                        <form method="get" action="{% url 'reply_message' msg.id %}">
+                            <button type="submit" class="btn btn-primary">Reply</button>
+                        </form>
+
+                        <form method="post" action="{% url 'delete_message' msg.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </form>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-icon">📭</div>
+            <h3>No messages yet</h3>
+            <p>Your inbox is empty. Send your first message to get started!</p>
+        </div>
+    {% endif %}
+
+    <div class="inbox-actions">
+        <a href="{% url 'send_message' %}" class="btn btn-secondary">✉️ Send Message</a>
+        <a href="{% url 'sent_messages' %}" class="btn btn-info">📤 Sent Messages</a>
+    </div>
+</div>
+
+</body>
+</html>

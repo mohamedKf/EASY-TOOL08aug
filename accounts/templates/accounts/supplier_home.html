@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Supplier Home</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'accounts/style.css' %}">
+</head>
+<body>
+    {% include 'accounts/supplier_navbar.html' %}
+
+    <h2 class="page-title">Welcome {{ request.user.name }} (Supplier)</h2>
+    <p><a href="{% url 'supplier_add_items' %}" class="link-btn">➕ Add More Items</a></p>
+
+    {% if screws %}
+        <section class="list-section">
+            <h3>Screws</h3>
+            <ul>
+                {% for screw in screws %}
+                    <li>{{ screw.screw_type }} - {{ screw.length_cm }} cm - {{ screw.count_per_box }} pcs - ₪{{ screw.price_per_100 }}/100</li>
+                {% endfor %}
+            </ul>
+        </section>
+    {% endif %}
+
+    {% if profile_sets %}
+        <section class="list-section">
+            <h3>Aluminum Profile Sets</h3>
+            <ul>
+                {% for profile in profile_sets %}
+                    <li>{{ profile.name }} ({{ profile.kind }}) - Code: {{ profile.set_code }} - ₪{{ profile.price_per_kilo }}/kg</li>
+                {% endfor %}
+            </ul>
+        </section>
+    {% endif %}
+
+    {% if metal_profiles %}
+        <section class="list-section">
+            <h3>Studs and Tracks</h3>
+            <ul>
+                {% for metal in metal_profiles %}
+                    <li>{{ metal.profile_type }} {{ metal.size }} - {{ metal.quantity }} pcs - ₪{{ metal.price_per_piece }}/piece</li>
+                {% endfor %}
+            </ul>
+        </section>
+    {% endif %}
+
+    {% if boards %}
+        <section class="list-section">
+            <h3>Drywall Boards</h3>
+            <ul>
+                {% for board in boards %}
+                    <li>{{ board.color }} {{ board.size }} - {{ board.quantity }} pcs - ₪{{ board.price_per_board }}/board</li>
+                {% endfor %}
+            </ul>
+        </section>
+    {% endif %}
+</body>
+</html>

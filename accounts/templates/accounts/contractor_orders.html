@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Your Orders</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'accounts/style.css' %}">
+</head>
+<body>
+
+{% include 'accounts/contractor_navbar.html' %}
+
+<div class="container">
+    <h2>Your Orders</h2>
+
+    {% if orders %}
+        {% for order in orders %}
+            <div class="order-card">
+                <p><strong>Order Number:</strong> {{ order.order_number }}</p>
+                <p><strong>Supplier:</strong> {{ order.supplier.name }}</p>
+                <p><strong>Company:</strong> {{ order.company.name }}</p>
+                <p><strong>Status:</strong> {{ order.status }}</p>
+                <p><strong>Date:</strong> {{ order.created_at }}</p>
+                <p><strong>Delivery Date:</strong> {{ order.delivery_date|default:"N/A" }}</p>
+
+                <h4>Items:</h4>
+                <ul>
+                    {% for item in order.items.all %}
+                        <li>
+                            {{ item.item_name }} — {{ item.quantity }} pcs @ ₪{{ item.unit_price }} = ₪{{ item.total_price }}
+                        </li>
+                    {% endfor %}
+                </ul>
+
+                <p><strong>Total Before Tax:</strong> ₪{{ order.total_before_tax }}</p>
+                <p><strong>Total After 18% Tax:</strong> ₪{{ order.total_after_tax }}</p>
+
+                <!-- Generate PDF Button -->
+                <form method="get" action="{% url 'export_orders_pdf' order.id %}">
+                    <button type="submit" class="btn btn-primary">📄 Generate PDF</button>
+                </form>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p class="empty-message">You haven't placed any orders yet.</p>
+    {% endif %}
+</div>
+
+</body>
+</html>

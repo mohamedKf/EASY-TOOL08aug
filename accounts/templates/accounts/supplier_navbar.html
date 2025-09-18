@@ -1,0 +1,11 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'accounts/style.css' %}">
+
+<nav class="supplier-navbar">
+    <ul>
+        <li><a href="{% url 'supplier_home' %}" class="{% if request.resolver_match.url_name == 'supplier_home' %}active{% endif %}">Home</a></li>
+        <li><a href="{% url 'supplier_add_items' %}" class="{% if request.resolver_match.url_name == 'supplier_add_items' %}active{% endif %}">Add Items</a></li>
+        <li><a href="{% url 'supplier_orders' %}" class="{% if request.resolver_match.url_name == 'supplier_orders' %}active{% endif %}">Orders</a></li>
+        <li><a href="{% url 'logout' %}" class="logout">Logout</a></li>
+    </ul>
+</nav>

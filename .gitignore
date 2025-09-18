@@ -1,0 +1,20 @@
+﻿# Python venv
+venv/
+easy-tool/
+.env/
+
+# Byte-compiled / cache
+__pycache__/
+*.pyc
+
+# IDE
+.idea/
+.vscode/
+
+# System files
+Thumbs.db
+.DS_Store
+
+# Django migrations (optional to ignore auto-created ones)
+*/migrations/*.py
+!*/migrations/__init__.py

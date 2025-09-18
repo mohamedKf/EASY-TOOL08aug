@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Signup</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'accounts/style.css' %}">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.3) 0%, transparent 50%);
+            z-index: -1;
+        }
+
+        h2 {
+            color: white;
+            text-align: center;
+            font-size: 2.5rem;
+            margin: 20px 0 30px 0;
+            font-weight: 300;
+            letter-spacing: 2px;
+            text-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        form {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            margin: 0 auto;
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        form::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+            border-radius: 20px;
+            z-index: -1;
+        }
+
+        label {
+            display: inline-block;
+            width: 120px;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        select {
+            width: 300px;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            outline: none;
+            color: white;
+            font-size: 14px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            margin-left: 10px;
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        input:focus, select:focus {
+            border-color: rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+        }
+
+        select {
+            cursor: pointer;
+        }
+
+        select option {
+            background: rgba(118, 75, 162, 0.9);
+            color: white;
+        }
+
+        #company_code_field {
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            opacity: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.4s ease;
+        }
+
+        #company_code_field[style*="block"] {
+            opacity: 1;
+            max-height: 120px;
+            padding: 15px;
+        }
+
+        #company_code_field label {
+            color: rgba(255, 255, 255, 0.95);
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: block;
+            font-size: 14px;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        #company_code_field input {
+            width: 100%;
+            margin-left: 0;
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            font-weight: 500;
+        }
+
+        #company_code_field input:focus {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+            box-shadow: 0 0 25px rgba(255, 255, 255, 0.15);
+        }
+
+        #company_code_field input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 20px;
+        }
+
+        button:hover {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.2) 100%);
+            border-color: rgba(255, 255, 255, 0.5);
+            box-shadow: 0 10px 30px rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            form {
+                padding: 30px 20px;
+                margin: 10px;
+            }
+
+            label {
+                width: 100%;
+                display: block;
+                margin-bottom: 5px;
+            }
+
+            input[type="text"],
+            input[type="email"],
+            input[type="password"],
+            select {
+                width: 100%;
+                margin-left: 0;
+                margin-bottom: 15px;
+            }
+
+            #company_code_field input {
+                width: 100%;
+                margin-left: 0;
+            }
+
+            h2 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+
+    <script>
+        function toggleCompanyCodeField() {
+            const userType = document.getElementById("id_user_type").value;
+            const companyCodeField = document.getElementById("company_code_field");
+            companyCodeField.style.display = userType === "worker" ? "block" : "none";
+        }
+
+        window.addEventListener("DOMContentLoaded", function () {
+            toggleCompanyCodeField();
+            document.getElementById("id_user_type").addEventListener("change", toggleCompanyCodeField);
+        });
+    </script>
+</head>
+<body>
+    {% include 'accounts/home_navbar.html' %}
+    <h2>Signup</h2>
+
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.name.label_tag }} {{ form.name }} <br><br>
+        {{ form.username.label_tag }} {{ form.username }} <br><br>
+        {{ form.email.label_tag }} {{ form.email }} <br><br>
+        {{ form.phone.label_tag }} {{ form.phone }} <br><br>
+        {{ form.password.label_tag }} {{ form.password }} <br><br>
+        {{ form.user_type.label_tag }} {{ form.user_type }} <br><br>
+
+        <div id="company_code_field" style="display:none;">
+            <label for="id_company_code">Company Code:</label>
+            <input type="text" name="company_code" id="id_company_code" placeholder="Enter your company code">
+        </div>
+
+        <br>
+        <button type="submit">Sign Up</button>
+    </form>
+</body>
+</html>

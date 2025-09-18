@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Project</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'accounts/style.css' %}">
+</head>
+<body>
+    {% include 'accounts/contractor_navbar.html' %}
+
+<div class="container">
+    <h1>Create Aluminum Project</h1>
+
+    <!-- Display Django messages -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-success">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Project form -->
+    <form method="POST" enctype="multipart/form-data" class="form-card">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Create Project</button>
+    </form>
+</div>
+
+</body>
+</html>

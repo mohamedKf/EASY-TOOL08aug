@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Drywall Room Management</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'accounts/style.css' %}">
+</head>
+<body>
+
+{% include 'accounts/contractor_navbar.html' %}
+
+<div class="container">
+    <h2>Create Rooms with Walls and Ceilings</h2>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="hidden" name="room_count" id="room_count" value="0">
+        <div id="roomContainer"></div>
+
+        <button type="button" class="btn btn-primary" onclick="addRoom()">➕ Add Room</button>
+        <br><br>
+        <button type="submit" class="btn btn-primary">✅ Submit All</button>
+    </form>
+
+    <hr>
+
+    <h2>Current Rooms</h2>
+
+    {% for room in rooms %}
+        <div class="section">
+            <h3>{{ room.name }}</h3>
+            {% if room.blueprint %}
+                <p>Blueprint: <a href="{{ room.blueprint.url }}" target="_blank">View</a></p>
+            {% endif %}
+
+            <h4>Walls</h4>
+            {% for wall in room.walls.all %}
+                <div class="dashed-box">
+                    Width: {{ wall.width }} cm |
+                    Height: {{ wall.height }} cm |
+                    Type: {{ wall.drywall_type }} |
+                    Stud: {{ wall.stud_thickness }} mm |
+                    Layers: {{ wall.number_of_layers }} |
+                    Double Sided: {{ wall.double_sided }}
+                </div>
+            {% empty %}
+                <p class="text-muted">No walls.</p>
+            {% endfor %}
+
+            <h4>Ceilings</h4>
+            {% for ceiling in room.ceilings.all %}
+                <div class="dashed-box">
+                    Area: {{ ceiling.area }} m² |
+                    Type: {{ ceiling.drywall_type }} |
+                    Stud: {{ ceiling.stud_thickness }} mm |
+                    Board Length: {{ ceiling.board_length }} m
+                </div>
+            {% empty %}
+                <p class="text-muted">No ceilings.</p>
+            {% endfor %}
+        </div>
+    {% empty %}
+        <p class="text-muted">No rooms created yet.</p>
+    {% endfor %}
+</div>
+
+<script>
+let roomIndex = 0;
+const drywallTypes = ['white', 'pink', 'green', 'blue'];
+const studTypes = ['37', '50', '70', '100', 'f47'];
+const boardLengths = [
+    {value: '2.0', label: '2000 mm (2.0 m)'},
+    {value: '2.6', label: '2600 mm (2.6 m)'},
+    {value: '3.0', label: '3000 mm (3.0 m)'}
+];
+
+function addRoom() {
+    const container = document.getElementById("roomContainer");
+    const roomDiv = document.createElement("div");
+    roomDiv.id = `room_${roomIndex}`;
+    roomDiv.innerHTML = `
+        <fieldset>
+            <legend>Room ${roomIndex + 1}</legend>
+            <label>Room Name:</label>
+            <input type="text" name="room_name_${roomIndex}" required placeholder="e.g. Living Room"><br>
+            <label>Blueprint File:</label>
+            <input type="file" name="room_file_${roomIndex}"><br><br>
+
+            <input type="hidden" name="wall_count_${roomIndex}" id="wall_count_${roomIndex}" value="0">
+            <div id="walls_${roomIndex}"></div>
+            <button type="button" class="btn btn-primary" onclick="addWall(${roomIndex})">➕ Add Wall</button>
+            <br><br>
+
+            <input type="hidden" name="ceiling_count_${roomIndex}" id="ceiling_count_${roomIndex}" value="0">
+            <div id="ceilings_${roomIndex}"></div>
+            <button type="button" class="btn btn-primary" onclick="addCeiling(${roomIndex})">➕ Add Ceiling</button>
+        </fieldset>
+    `;
+    container.appendChild(roomDiv);
+    document.getElementById("room_count").value = ++roomIndex;
+}
+
+function addWall(roomIdx) {
+    const countInput = document.getElementById(`wall_count_${roomIdx}`);
+    let wallIdx = parseInt(countInput.value);
+
+    const wallDiv = document.createElement("div");
+    wallDiv.innerHTML = `
+        <fieldset class="dashed-box">
+            <legend>Wall ${wallIdx + 1}</legend>
+            <label>Width (cm):</label>
+            <input type="number" step="0.01" name="wall_width_${roomIdx}_${wallIdx}" required><br>
+            <label>Height (cm):</label>
+            <input type="number" step="0.01" name="wall_height_${roomIdx}_${wallIdx}" required><br>
+            <label>Drywall Type:</label>
+            <select name="wall_type_${roomIdx}_${wallIdx}" required>
+                ${drywallTypes.map(type => `<option value="${type}">${type}</option>`).join('')}
+            </select><br>
+            <label>Stud Thickness (mm):</label>
+            <select name="wall_stud_${roomIdx}_${wallIdx}" required>
+                ${studTypes.map(s => `<option value="${s}">${s}</option>`).join('')}
+            </select><br>
+            <label>Layers:</label>
+            <input type="number" name="wall_layers_${roomIdx}_${wallIdx}" min="1" max="2" value="1"><br>
+            <label>Double Sided:</label>
+            <input type="checkbox" name="wall_double_${roomIdx}_${wallIdx}">
+        </fieldset>
+    `;
+    document.getElementById(`walls_${roomIdx}`).appendChild(wallDiv);
+    countInput.value = wallIdx + 1;
+}
+
+function addCeiling(roomIdx) {
+    const countInput = document.getElementById(`ceiling_count_${roomIdx}`);
+    let ceilingIdx = parseInt(countInput.value);
+
+    const ceilingDiv = document.createElement("div");
+    ceilingDiv.innerHTML = `
+        <fieldset class="dashed-box">
+            <legend>Ceiling ${ceilingIdx + 1}</legend>
+            <label>Area (m²):</label>
+            <input type="number" step="0.01" name="ceiling_area_${roomIdx}_${ceilingIdx}" required><br>
+            <label>Drywall Type:</label>
+            <select name="ceiling_type_${roomIdx}_${ceilingIdx}" required>
+                ${drywallTypes.map(type => `<option value="${type}">${type}</option>`).join('')}
+            </select><br>
+            <label>Stud Thickness (mm):</label>
+            <select name="ceiling_stud_${roomIdx}_${ceilingIdx}" required>
+                ${studTypes.map(s => `<option value="${s}">${s}</option>`).join('')}
+            </select><br>
+            <label>Board Length:</label>
+            <select name="ceiling_board_length_${roomIdx}_${ceilingIdx}">
+                ${boardLengths.map(b => `<option value="${b.value}">${b.label}</option>`).join('')}
+            </select>
+        </fieldset>
+    `;
+    document.getElementById(`ceilings_${roomIdx}`).appendChild(ceilingDiv);
+    countInput.value = ceilingIdx + 1;
+}
+</script>
+
+</body>
+</html>

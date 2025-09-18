@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Worker Dashboard</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'accounts/style.css' %}">
+
+    <script>
+        function updateClock() {
+            const now = new Date();
+            document.getElementById("clock").textContent = now.toLocaleTimeString();
+            document.getElementById("date").textContent = now.toLocaleDateString();
+        }
+        setInterval(updateClock, 1000);
+        window.onload = updateClock;
+
+        // Get location and fill hidden inputs before submitting the form
+        function getLocationAndSubmit(formId) {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    document.getElementById(formId + "_lat").value = position.coords.latitude;
+                    document.getElementById(formId + "_lon").value = position.coords.longitude;
+                    document.getElementById(formId).submit();
+                }, function (error) {
+                    alert("Could not get location. Please allow location access.");
+                });
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
+        }
+    </script>
+</head>
+<body>
+
+    {% include 'accounts/worker_navbar.html' %}
+
+    <h3>Current Time: <span id="clock"></span></h3>
+    <h4>Current Date: <span id="date"></span></h4>
+
+    <h2>Attendance for {{ now|date:"F Y" }}</h2>
+
+    {% if messages %}
+        {% for message in messages %}
+            <p class="success-message">{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+
+    <p><strong>Total days worked this month:</strong> {{ total_days }}</p>
+    <p><strong>Total hours worked this month:</strong> {{ total_hours|floatformat:2 }}</p>
+
+    <hr>
+
+    <!-- Clock In/Out Buttons - Side by Side and Centered -->
+    <div style="display: flex; gap: 20px; margin: 20px 0; justify-content: center;">
+        <form id="clockin_form" method="post" action="{% url 'clock_in' %}">
+            {% csrf_token %}
+            <input type="hidden" name="latitude" id="clockin_form_lat">
+            <input type="hidden" name="longitude" id="clockin_form_lon">
+            <button type="button" class="primary-btn" onclick="getLocationAndSubmit('clockin_form')">CLOCK IN</button>
+        </form>
+
+        <form id="clockout_form" method="post" action="{% url 'clock_out' %}">
+            {% csrf_token %}
+            <input type="hidden" name="latitude" id="clockout_form_lat">
+            <input type="hidden" name="longitude" id="clockout_form_lon">
+            <button type="button" class="primary-btn" onclick="getLocationAndSubmit('clockout_form')">CLOCK OUT</button>
+        </form>
+    </div>
+
+    <!-- Today's Status - Side by Side and Centered -->
+    {% if attendances.0 %}
+        <div style="display: flex; gap: 30px; margin: 20px 0; justify-content: center;">
+            {% if attendances.0.clock_in %}
+                <div style="text-align: center;">
+                    <p>Clocked in at {{ attendances.0.clock_in|date:"H:i, d/m/Y" }}</p>
+                    {% if attendances.0.clock_in_latitude and attendances.0.clock_in_longitude %}
+                        <p>Location: <a href="https://www.google.com/maps?q={{ attendances.0.clock_in_latitude }},{{ attendances.0.clock_in_longitude }}" target="_blank">View on Map</a></p>
+                    {% endif %}
+                </div>
+            {% endif %}
+
+            {% if attendances.0.clock_out %}
+                <div style="text-align: center;">
+                    <p>Clocked out at {{ attendances.0.clock_out|date:"H:i, d/m/Y" }}</p>
+                    {% if attendances.0.clock_out_latitude and attendances.0.clock_out_longitude %}
+                        <p>Location: <a href="https://www.google.com/maps?q={{ attendances.0.clock_out_latitude }},{{ attendances.0.clock_out_longitude }}" target="_blank">View on Map</a></p>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    {% endif %}
+
+    <hr>
+
+    <h3>Attendance Records (Current Month)</h3>
+    <table class="attendance-table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Clock In</th>
+                <th>Clock In Location</th>
+                <th>Clock Out</th>
+                <th>Clock Out Location</th>
+                <th>Total Hours</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for a in attendances %}
+            <tr>
+                <td>{{ a.date }}</td>
+                <td>{{ a.clock_in|default:"-"|date:"H:i, d/m/Y" }}</td>
+                <td>
+                    {% if a.clock_in_latitude and a.clock_in_longitude %}
+                        <a href="https://www.google.com/maps?q={{ a.clock_in_latitude }},{{ a.clock_in_longitude }}" target="_blank">View</a>
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td>{{ a.clock_out|default:"-"|date:"H:i, d/m/Y" }}</td>
+                <td>
+                    {% if a.clock_out_latitude and a.clock_out_longitude %}
+                        <a href="https://www.google.com/maps?q={{ a.clock_out_latitude }},{{ a.clock_out_longitude }}" target="_blank">View</a>
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td>{{ a.total_hours|floatformat:2 }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" class="empty-text">No attendance records this month.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</body>
+</html>

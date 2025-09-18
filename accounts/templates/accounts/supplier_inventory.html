@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Supplier Inventory</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'accounts/style.css' %}">
+</head>
+<body>
+    {% include 'accounts/contractor_navbar.html' %}
+
+    <h2 class="page-title">Inventory from {{ supplier.name }}</h2>
+
+    {% if messages %}
+        <ul class="message-list">
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <!-- SCREWS -->
+    {% if screws %}
+        <section class="list-section">
+            <h3>Screws</h3>
+            <ul>
+                {% for screw in screws %}
+                    <li>
+                        {{ screw.screw_type }} - {{ screw.length_cm }} cm - {{ screw.count_per_box }} pcs - ₪{{ screw.price_per_100 }}/100
+                        <form method="post" class="inline-form">
+                            {% csrf_token %}
+                            <input type="hidden" name="material_type" value="screw">
+                            <input type="hidden" name="item_id" value="{{ screw.id }}">
+                            <input type="number" name="quantity" value="1" min="1" class="small-input">
+                            <button type="submit" class="primary-btn">Order</button>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
+        </section>
+    {% endif %}
+
+    <!-- ALUMINUM PROFILE SETS -->
+    {% if profile_sets %}
+        <section class="list-section">
+            <h3>Aluminum Profile Sets</h3>
+            <ul>
+                {% for profile in profile_sets %}
+                    <li>
+                        {{ profile.name }} ({{ profile.kind }}) - Code: {{ profile.set_code }} - ₪{{ profile.price_per_kilo }}/kg
+                        <form method="post" class="inline-form">
+                            {% csrf_token %}
+                            <input type="hidden" name="material_type" value="profile">
+                            <input type="hidden" name="item_id" value="{{ profile.id }}">
+                            <input type="number" name="quantity" value="1" min="1" class="small-input">
+                            <button type="submit" class="primary-btn">Order</button>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
+        </section>
+    {% endif %}
+
+    <!-- METAL PROFILES -->
+    {% if metal_profiles %}
+        <section class="list-section">
+            <h3>Studs and Tracks</h3>
+            <ul>
+                {% for metal in metal_profiles %}
+                    <li>
+                        {{ metal.profile_type }} {{ metal.size }} - {{ metal.quantity }} pcs - ₪{{ metal.price_per_piece }}/piece
+                        <form method="post" class="inline-form">
+                            {% csrf_token %}
+                            <input type="hidden" name="material_type" value="metal">
+                            <input type="hidden" name="item_id" value="{{ metal.id }}">
+                            <input type="number" name="quantity" value="1" min="1" class="small-input">
+                            <button type="submit" class="primary-btn">Order</button>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
+        </section>
+    {% endif %}
+
+    <!-- DRYWALL BOARDS -->
+    {% if boards %}
+        <section class="list-section">
+            <h3>Drywall Boards</h3>
+            <ul>
+                {% for board in boards %}
+                    <li>
+                        {{ board.color }} {{ board.size }} - {{ board.quantity }} pcs - ₪{{ board.price_per_board }}/board
+                        <form method="post" class="inline-form">
+                            {% csrf_token %}
+                            <input type="hidden" name="material_type" value="board">
+                            <input type="hidden" name="item_id" value="{{ board.id }}">
+                            <input type="number" name="quantity" value="1" min="1" class="small-input">
+                            <button type="submit" class="primary-btn">Order</button>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
+        </section>
+    {% endif %}
+
+    <a href="{% url 'supplier_list' %}" class="link-btn">← Back to Supplier List</a>
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Contractor - Workers Log</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'accounts/style.css' %}">
+</head>
+<body>
+    {% include 'accounts/contractor_navbar.html' %}
+
+<div class="container">
+    <h2>👷 Contractor's Worker Log</h2>
+
+    {% if reports_by_worker %}
+        {% for worker, report_list in reports_by_worker.items %}
+            <div class="worker-card">
+                <h3>👤 Worker: {{ worker.username }}</h3>
+
+                <!-- 💵 Wage Update Form -->
+                <form method="post" action="{% url 'update_worker_wage' worker.id %}" class="inline-form mb-3">
+                    {% csrf_token %}
+                    <label>💵 Hourly Wage (₪):</label>
+                    <input type="number" name="hourly_wage" step="0.01" value="{{ worker.hourly_wage }}" required>
+                    <button type="submit" class="btn btn-primary">💾 Save</button>
+                </form>
+
+                <!-- 🔽 PDF Export Button -->
+                <form method="get" action="{% url 'export_worker_log_pdf' worker.id %}" class="inline-form mb-3">
+                    <button type="submit" class="btn btn-primary">📁 Download Full Worker Log PDF</button>
+                </form>
+
+                {% for item in report_list %}
+                    {% with report=item.report %}
+                        <div class="report-card">
+                            <p><strong>📅 {{ item.month_name }} {{ report.year }}</strong></p>
+                            <p>
+                                🗓️ Days Worked: {{ report.total_days }} |
+                                ⏱️ Total Hours: {{ report.total_hours|floatformat:2 }} |
+                                💰 Salary: {{ report.salary|floatformat:2 }} ₪
+                            </p>
+
+                            {% if report.payroll_file %}
+                                <p>📄 Payroll: <a href="{{ report.payroll_file.url }}" download>Download</a></p>
+                            {% else %}
+                                <form method="post" enctype="multipart/form-data" class="mb-3">
+                                    {% csrf_token %}
+                                    {{ form.payroll_file }}
+                                    <input type="hidden" name="report_id" value="{{ report.id }}">
+                                    <button type="submit" class="btn btn-primary">📤 Upload Payroll</button>
+                                </form>
+                            {% endif %}
+
+                            <!-- 📋 Attendance Table -->
+                            <details>
+                                <summary>📋 View Daily Attendance</summary>
+                                <div class="table-wrap">
+                                    <table class="modern-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Date</th>
+                                                <th>Clock In</th>
+                                                <th>Clock Out</th>
+                                                <th>Total Hours</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for record in item.attendance %}
+                                                <tr>
+                                                    <td>{{ record.date }}</td>
+                                                    <td>{{ record.clock_in|date:"H:i" }}</td>
+                                                    <td>{{ record.clock_out|date:"H:i" }}</td>
+                                                    <td>{{ record.total_hours|floatformat:2 }}</td>
+                                                </tr>
+                                            {% empty %}
+                                                <tr><td colspan="4" class="text-muted">No attendance records for this month.</td></tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </details>
+                        </div>
+                    {% endwith %}
+                {% endfor %}
+            </div>
+        {% endfor %}
+    {% else %}
+        <p class="text-muted">No workers or reports found.</p>
+    {% endif %}
+</div>
+
+</body>
+</html>

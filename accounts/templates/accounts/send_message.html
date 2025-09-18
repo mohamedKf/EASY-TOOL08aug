@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Send Message</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'accounts/style.css' %}">
+    <style>
+        .send-message-container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .page-title {
+            font-size: 2.2rem;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .message-form {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #f1f3f4;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-input {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .file-input-display {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 15px;
+            border: 2px dashed #e9ecef;
+            border-radius: 8px;
+            background: #f8f9fa;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .file-input-display:hover {
+            border-color: #667eea;
+            background: #f0f2ff;
+        }
+
+        .primary-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .primary-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .flash-messages {
+            margin-top: 20px;
+        }
+
+        .flash-messages p {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px 20px;
+            border-radius: 8px;
+            border-left: 4px solid #28a745;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #6c757d;
+            text-decoration: none;
+            margin-bottom: 20px;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: #495057;
+        }
+
+        .form-tip {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .send-message-container {
+                padding: 15px;
+            }
+
+            .message-form {
+                padding: 20px;
+            }
+
+            .page-title {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+{% if request.user.user_type == 'contractor' %}
+    {% include 'accounts/contractor_navbar.html' %}
+{% elif request.user.user_type == 'worker' %}
+    {% include 'accounts/worker_navbar.html' %}
+{% endif %}
+
+<div class="send-message-container">
+    <a href="{% url 'inbox' %}" class="back-link">← Back to Inbox</a>
+
+    <h1 class="page-title">Send Message</h1>
+
+    <form method="post" enctype="multipart/form-data" class="message-form">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label for="id_recipient">Recipient</label>
+            {{ form.recipient }}
+            <div class="form-tip">Select who you want to send this message to</div>
+        </div>
+
+        <div class="form-group">
+            <label for="id_text">Message</label>
+            {{ form.text }}
+            <div class="form-tip">Write your message here</div>
+        </div>
+
+        <div class="form-group">
+            <label for="id_image">Image (Optional)</label>
+            <div class="file-input-wrapper">
+                {{ form.image }}
+                <div class="file-input-display">
+                    <span>📷</span>
+                    <span>Choose an image file...</span>
+                </div>
+            </div>
+            <div class="form-tip">Upload an image if needed (JPG, PNG, etc.)</div>
+        </div>
+
+        <div class="form-group">
+            <label for="id_file">File (Optional)</label>
+            <div class="file-input-wrapper">
+                {{ form.file }}
+                <div class="file-input-display">
+                    <span>📎</span>
+                    <span>Choose a file...</span>
+                </div>
+            </div>
+            <div class="form-tip">Upload any type of file if needed</div>
+        </div>
+
+        <button type="submit" class="primary-btn">Send Message</button>
+    </form>
+
+    {% if messages %}
+        <div class="flash-messages">
+            {% for message in messages %}
+                <p>{{ message }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>
+
+<script>
+    // File input display enhancement
+    document.querySelectorAll('.file-input').forEach(input => {
+        input.addEventListener('change', function() {
+            const display = this.parentNode.querySelector('.file-input-display span:last-child');
+            if (this.files.length > 0) {
+                display.textContent = this.files[0].name;
+            } else {
+                display.textContent = this.type === 'file' && this.accept && this.accept.includes('image')
+                    ? 'Choose an image file...'
+                    : 'Choose a file...';
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

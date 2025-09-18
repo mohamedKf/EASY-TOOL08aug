@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Company Info</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'accounts/style.css' %}">
+</head>
+<body>
+
+    <h2>🏢 Company Info</h2>
+
+    {% if error %}
+        <p class="error-message">{{ error }}</p>
+    {% endif %}
+
+    {% if company %}
+        <p><strong>Name:</strong> {{ company.name }}</p>
+        <p><strong>Owner:</strong> {{ company.contractor.username }}</p>
+        <p><strong>Code:</strong> {{ company.code }}</p>
+
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" name="leave_company" class="danger-btn">❌ Leave Company</button>
+        </form>
+    {% else %}
+        <form method="post" class="company-join-form">
+            {% csrf_token %}
+            <label for="company_code">Enter Company Code:</label>
+            <input type="text" id="company_code" name="company_code" required>
+            <button type="submit" name="join_company" class="primary-btn">🔐 Join Company</button>
+        </form>
+    {% endif %}
+
+</body>
+</html>

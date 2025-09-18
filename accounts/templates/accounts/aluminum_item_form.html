@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Aluminum Item</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'accounts/style.css' %}">
+</head>
+<body>
+
+<div class="aluminum-item-form">
+    <h4>Add Aluminum Item</h4>
+
+    <label>Type:</label>
+    <select name="item_type_{{ room.id }}">
+        <option value="window">Window</option>
+        <option value="door">Door</option>
+    </select>
+
+    <label>Subtype:</label>
+    <select name="subtype_{{ room.id }}">
+        <option value="sliding">Sliding</option>
+        <option value="multi_bolt">Multi-Bolt</option>
+    </select>
+
+    <label>Aluminum Type:</label>
+    <select name="aluminum_type_{{ room.id }}">
+        <option value="1700">1700</option>
+        <option value="7000">7000</option>
+        <option value="7300">7300</option>
+        <option value="9000">9000</option>
+        <option value="9200">9200</option>
+    </select>
+
+    <label>Glass Type:</label>
+    <select name="glass_type_{{ room.id }}">
+        <option value="transparent">Transparent</option>
+        <option value="anti_sun">Anti-Sun</option>
+        <option value="shadowed">Shadowed</option>
+        <option value="בודדי">בודדי</option>
+    </select>
+
+    <label>Number of Sashes:</label>
+    <input type="number" name="number_of_sashs_{{ room.id }}" min="1">
+
+    <label>Glass Heights (left / middle / right):</label>
+    <input type="number" step="0.01" name="height_left_{{ room.id }}">
+    <input type="number" step="0.01" name="height_middle_{{ room.id }}">
+    <input type="number" step="0.01" name="height_right_{{ room.id }}">
+
+    <label>Glass Widths (top / middle / bottom):</label>
+    <input type="number" step="0.01" name="width_top_{{ room.id }}">
+    <input type="number" step="0.01" name="width_middle_{{ room.id }}">
+    <input type="number" step="0.01" name="width_bottom_{{ room.id }}">
+</div>
+
+</body>
+</html>

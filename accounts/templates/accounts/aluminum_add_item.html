@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Rooms and Aluminum Items</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'accounts/style.css' %}">
+</head>
+<body>
+
+{% include 'accounts/contractor_navbar.html' %}
+
+<div class="container">
+    <h2>Create Rooms and Aluminum Items</h2>
+
+    <form method="post" enctype="multipart/form-data" id="aluminumForm">
+        {% csrf_token %}
+        <input type="hidden" name="room_count" id="room_count" value="0">
+
+        <div id="roomContainer"></div>
+
+        <br>
+        <button type="button" class="btn btn-primary" onclick="addRoom()">➕ Add Room</button>
+        <br><br>
+        <button type="submit" class="btn btn-primary">✅ Submit All</button>
+    </form>
+</div>
+
+<script>
+let roomIndex = 0;
+
+const windowAluminumTypes = {
+    sliding: ['1700', '7000', '7300', '9000', '9200'],
+    multi_bolt: ['4400', '4300', '4500', '9400']
+};
+
+const doorAluminumTypes = {
+    sliding: ['2200', '9400', '9200', '7300'],
+    multi_bolt: ['2000', '4500', '4400']
+};
+
+const glassTypes = ['transparent', 'anti_sun', 'shadowed', 'בודדי'];
+
+function addRoom() {
+    const roomContainer = document.getElementById("roomContainer");
+
+    const roomDiv = document.createElement("div");
+    roomDiv.className = "section";
+    roomDiv.id = `room-${roomIndex}`;
+
+    roomDiv.innerHTML = `
+        <fieldset>
+            <legend>Room ${roomIndex + 1}</legend>
+            <label>Room Name:</label>
+            <input type="text" name="room_name_${roomIndex}" required><br><br>
+
+            <label>Room File:</label>
+            <input type="file" name="room_file_${roomIndex}"><br><br>
+
+            <input type="hidden" name="item_count_${roomIndex}" id="item_count_${roomIndex}" value="0">
+
+            <div id="items-${roomIndex}" class="itemContainer"></div>
+            <button type="button" class="btn btn-primary" onclick="addItem(${roomIndex})">➕ Add Item</button>
+        </fieldset>
+    `;
+
+    roomContainer.appendChild(roomDiv);
+    roomIndex++;
+    document.getElementById("room_count").value = roomIndex;
+}
+
+function addItem(roomIdx) {
+    const itemsDiv = document.getElementById(`items-${roomIdx}`);
+    const itemCountInput = document.getElementById(`item_count_${roomIdx}`);
+    const itemIndex = parseInt(itemCountInput.value);
+    const prefix = `${roomIdx}_${itemIndex}`;
+
+    const itemHTML = `
+        <div class="dashed-box">
+            <strong>Item ${itemIndex + 1}</strong><br><br>
+
+            <label>Type:</label>
+            <select name="item_type_${prefix}" id="item_type_${prefix}" onchange="onItemOrSubtypeChange('${prefix}')" required>
+                <option value="window">Window</option>
+                <option value="door">Door</option>
+            </select><br><br>
+
+            <label>Subtype:</label>
+            <select name="subtype_${prefix}" id="subtype_${prefix}" onchange="onItemOrSubtypeChange('${prefix}')" required>
+                <option value="sliding">Sliding</option>
+                <option value="multi_bolt">Multi-Bolt</option>
+            </select><br><br>
+
+            <label>Aluminum Type:</label>
+            <select name="aluminum_type_${prefix}" id="aluminum_type_${prefix}" required></select><br><br>
+
+            <label>Glass Type:</label>
+            <select name="glass_type_${prefix}" required>
+                ${glassTypes.map(type => `<option value="${type}">${type}</option>`).join('')}
+            </select><br><br>
+
+            <label>Number of Sashes:</label>
+            <input type="number" name="number_of_sashs_${prefix}" id="number_of_sashs_${prefix}" min="1" value="2" required><br><br>
+
+            <p>Heights (left / middle / right):</p>
+            <input type="number" step="0.01" name="height_left_${prefix}" required>
+            <input type="number" step="0.01" name="height_middle_${prefix}" required>
+            <input type="number" step="0.01" name="height_right_${prefix}" required><br><br>
+
+            <p>Widths (top / middle / bottom):</p>
+            <input type="number" step="0.01" name="width_top_${prefix}" required>
+            <input type="number" step="0.01" name="width_middle_${prefix}" required>
+            <input type="number" step="0.01" name="width_bottom_${prefix}" required>
+        </div>
+    `;
+
+    itemsDiv.insertAdjacentHTML('beforeend', itemHTML);
+    itemCountInput.value = itemIndex + 1;
+
+    onItemOrSubtypeChange(prefix);
+}
+
+function onItemOrSubtypeChange(prefix) {
+    const type = document.getElementById(`item_type_${prefix}`).value;
+    const subtype = document.getElementById(`subtype_${prefix}`).value;
+    const aluminumSelect = document.getElementById(`aluminum_type_${prefix}`);
+    const sashInput = document.getElementById(`number_of_sashs_${prefix}`);
+
+    let aluminumOptions = [];
+
+    if (type === 'window') {
+        aluminumOptions = windowAluminumTypes[subtype] || [];
+    } else if (type === 'door') {
+        aluminumOptions = doorAluminumTypes[subtype] || [];
+    }
+
+    aluminumSelect.innerHTML = aluminumOptions.map(opt => `<option value="${opt}">${opt}</option>`).join('');
+
+    if (subtype === 'sliding') {
+        sashInput.min = 2;
+        sashInput.max = 6;
+        if (parseInt(sashInput.value) < 2) sashInput.value = 2;
+    } else {
+        sashInput.min = 1;
+        sashInput.max = 2;
+        if (parseInt(sashInput.value) > 2) sashInput.value = 2;
+    }
+}
+</script>
+
+</body>
+</html>

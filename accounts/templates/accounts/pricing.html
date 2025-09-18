@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Set Your Prices</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'accounts/style.css' %}">
+
+    <script>
+        function toggleForm() {
+            const selection = document.getElementById('category_select').value;
+
+            document.getElementById('aluminum_section').style.display = (selection === 'aluminum') ? 'block' : 'none';
+            document.getElementById('glass_section').style.display = (selection === 'glass') ? 'block' : 'none';
+            document.getElementById('drywall_section').style.display = (selection === 'drywall') ? 'block' : 'none';
+        }
+        window.onload = toggleForm;
+    </script>
+</head>
+<body>
+{% include 'accounts/contractor_navbar.html' %}
+
+<h1>Set Your Prices</h1>
+
+{% if error %}
+    <p class="error-message"><strong>{{ error }}</strong></p>
+{% endif %}
+
+<form method="post">
+    {% csrf_token %}
+
+    <label for="category_select"><strong>Choose Category:</strong></label>
+    <select id="category_select" name="category_select" onchange="toggleForm()">
+        <option value="aluminum">Aluminum</option>
+        <option value="glass">Glass</option>
+        <option value="drywall">Drywall</option>
+    </select>
+
+    <hr>
+
+    <!-- 🔩 Aluminum Prices -->
+    <div id="aluminum_section" class="category-section">
+        <h2>Aluminum Prices (₪ per m²)</h2>
+        {{ aluminum_formset.management_form }}
+        {% for form in aluminum_formset %}
+            <div class="form-block">
+            {{ form.id }}
+            {{ form.aluminum_type.as_hidden }}
+            <label><strong>Aluminum type:</strong> {{ form.aluminum_type.value }}</label>
+
+            {{ form.price_per_m2.label_tag }}
+            {{ form.price_per_m2 }}
+
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- 🪟 Glass Prices -->
+    <div id="glass_section" class="category-section">
+        <h2>Glass Prices (₪ per m²)</h2>
+        {{ glass_formset.management_form }}
+        {% for form in glass_formset %}
+            <div class="form-block">
+                {{ form.id }}
+                {{ form.glass_type.as_hidden }}
+                <label><strong>Type:</strong> {{ form.glass_type.value }}</label>
+
+                {{ form.price_per_m2.label_tag }}
+                {{ form.price_per_m2 }}
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- 🧱 Drywall Prices -->
+    <div id="drywall_section" class="category-section">
+        <h2>Drywall: Metal Profiles (₪ per meter)</h2>
+        {{ metal_formset.management_form }}
+        {% for form in metal_formset %}
+          <div class="form-block">
+            {{ form.id }}
+            {{ form.profile_type.as_hidden }}
+            {{ form.thickness.as_hidden }}
+            <label><strong>Type:</strong> {{ form.profile_type.value }}</label><br>
+            <label><strong>Thickness:</strong> {{ form.thickness.value }}</label>
+
+            {{ form.price_per_meter.label_tag }}
+            {{ form.price_per_meter }}
+          </div>
+        {% endfor %}
+
+        <h2>Drywall: Boards (₪ per board)</h2>
+        {{ board_formset.management_form }}
+        {% for form in board_formset %}
+          <div class="form-block">
+            {{ form.id }}
+            {{ form.color.as_hidden }}
+            {{ form.size.as_hidden }}
+            <label><strong>Color:</strong> {{ form.color.value }}</label><br>
+            <label><strong>Size:</strong> {{ form.size.value }}</label>
+
+            {{ form.price_per_board.label_tag }}
+            {{ form.price_per_board }}
+          </div>
+        {% endfor %}
+
+    </div>
+
+    <br>
+    <button type="submit" name="save" class="save-button">💾 Save Prices</button>
+</form>
+</body>
+</html>

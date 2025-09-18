@@ -1,0 +1,18 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'accounts/style.css' %}">
+
+<nav class="contractor-navbar">
+    <ul>
+        <li><a href="{% url 'contractor_page' %}" class="{% if request.resolver_match.url_name == 'contractor_page' %}active{% endif %}">Home</a></li>
+        <li><a href="{% url 'create_project' %}" class="{% if request.resolver_match.url_name == 'create_project' %}active{% endif %}">Create Project</a></li>
+        <li><a href="{% url 'all_projects_nested' %}" class="{% if request.resolver_match.url_name == 'all_projects_nested' %}active{% endif %}">Projects</a></li>
+        <li><a href="{% url 'materials_page' %}" class="{% if request.resolver_match.url_name == 'materials_page' %}active{% endif %}">Materials</a></li>
+        <li><a href="{% url 'pricing' %}" class="{% if request.resolver_match.url_name == 'pricing' %}active{% endif %}">Pricing</a></li>
+        <li><a href="{% url 'inbox' %}" class="{% if request.resolver_match.url_name == 'inbox' %}active{% endif %}">Messages</a></li>
+        <li><a href="{% url 'contractor_worker_log' %}" class="{% if request.resolver_match.url_name == 'contractor_worker_log' %}active{% endif %}">Workers Log</a></li>
+        <li><a href="{% url 'contractor_company' %}" class="{% if request.resolver_match.url_name == 'contractor_company' %}active{% endif %}">My Company</a></li>
+        <li><a href="{% url 'supplier_list' %}" class="{% if request.resolver_match.url_name == 'supplier_list' %}active{% endif %}">Suppliers</a></li>
+        <li><a href="{% url 'contractor_orders' %}" class="{% if request.resolver_match.url_name == 'contractor_orders' %}active{% endif %}">Orders</a></li>
+        <li><a href="{% url 'logout' %}" class="logout">Logout</a></li>
+    </ul>
+</nav>

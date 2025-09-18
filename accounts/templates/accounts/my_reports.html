@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Monthly Reports</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'accounts/style.css' %}">
+    <style>
+        .toggle-year {
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .toggle-year::before {
+            content: "▶ ";
+            transition: transform 0.2s;
+        }
+        .toggle-year.expanded::before {
+            content: "▼ ";
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        table th, table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        table th {
+            background-color: #f2f2f2;
+        }
+        tr:nth-child(even) {background-color: #f9f9f9;}
+    </style>
+    <script>
+        function toggleTable(year) {
+            const table = document.getElementById("year-" + year);
+            const header = document.getElementById("header-" + year);
+
+            const isHidden = table.style.display === "none";
+            table.style.display = isHidden ? "table" : "none";
+            header.classList.toggle("expanded", isHidden);
+        }
+    </script>
+</head>
+<body>
+{% include 'accounts/worker_navbar.html' %}
+
+<h2>📊 My Monthly Work Reports</h2>
+
+{% if reports_by_year %}
+    {% for year, reports in reports_by_year.items %}
+        <div>
+            <h3 id="header-{{ year }}" class="toggle-year" onclick="toggleTable('{{ year }}')">
+                Year: {{ year }}
+            </h3>
+
+            <table id="year-{{ year }}" style="{% if forloop.first %}display: table;{% else %}display: none;{% endif %}">
+                <thead>
+                    <tr>
+                        <th>Month</th>
+                        <th>Total Days</th>
+                        <th>Total Hours</th>
+                        <th>Payroll</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for report in reports %}
+                    <tr>
+                        <td>{{ report.month_name }}</td>
+                        <td>{{ report.total_days }}</td>
+                        <td>{{ report.total_hours|floatformat:2 }}</td>
+                        <td>
+                            {% if report.payroll_file %}
+                                <a href="{{ report.payroll_file.url }}" download>Download</a>
+                            {% else %}
+                                No file
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endfor %}
+{% else %}
+    <p>No reports available.</p>
+{% endif %}
+</body>
+</html>

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Easy-Tool Home</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'accounts/style.css' %}">
+</head>
+<body>
+    {% include 'accounts/home_navbar.html' %}
+
+    <div class="container home-container">
+        <h1>Welcome to Easy-Tool</h1>
+
+        <div class="button-group">
+            <a href="{% url 'login' %}" class="btn btn-primary">🔐 Login</a>
+            <a href="{% url 'signup' %}" class="btn btn-secondary">📝 Sign Up</a>
+            <a href="{% url 'create_company' %}" class="btn btn-info">🏢 Create Company</a>
+        </div>
+    </div>
+
+</body>
+</html>
