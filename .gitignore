@@ -1,20 +1,51 @@
-﻿# Python venv
+﻿# -------------------
+# Python Environments
+# -------------------
+.venv/
 venv/
+env/
 easy-tool/
-.env/
+easy-tool-sup/
+supplier_desktop_app/.venv/
+supplier_desktop_app/easy-tool-sup/
 
-# Byte-compiled / cache
+# -------------------
+# Python cache
+# -------------------
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
 
-# IDE
+# -------------------
+# IDE files
+# -------------------
 .idea/
 .vscode/
 
+# -------------------
 # System files
+# -------------------
 Thumbs.db
 .DS_Store
 
-# Django migrations (optional to ignore auto-created ones)
+# -------------------
+# Django migrations (ignore auto-created, keep __init__.py)
+# -------------------
 */migrations/*.py
 !*/migrations/__init__.py
+
+# -------------------
+# Flutter build cache
+# -------------------
+easy_tool_worker/.dart_tool/
+easy_tool_worker/.flutter-plugins
+easy_tool_worker/.flutter-plugins-dependencies
+easy_tool_worker/.packages
+easy_tool_worker/.pub-cache/
+easy_tool_worker/.pub/
+easy_tool_worker/build/
+easy_tool_worker/android/local.properties
+easy_tool_worker/ios/Pods
+easy_tool_worker/ios/.symlinks
+easy_tool_worker/ios/Flutter/ephemeral/
